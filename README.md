@@ -1,7 +1,7 @@
-#SpotifyCompressionProject
+# SpotifyCompressionProject
 by Catherina Xu and Shivaal Roy
 
-##Getting Started
+## Getting Started
 To get going, run 
 ```shell script
 bash setup.sh
