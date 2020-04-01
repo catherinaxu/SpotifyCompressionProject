@@ -13,10 +13,12 @@ from typing import List, Tuple
 
 
 class LyricCompressor:
+
+    client_access_token = 'rnng65r8lN34SSMqUiOfxt_3zAo0b4HyTW_9ng1pel8xBnQkoiTAQ7ntD5kUSFcK'
+
     def __init__(self, cache_path: str):
         self.cache_path = Path(cache_path)
 
-        self.client_access_token = 'rnng65r8lN34SSMqUiOfxt_3zAo0b4HyTW_9ng1pel8xBnQkoiTAQ7ntD5kUSFcK'
         self._load_cache()
 
     def _load_cache(self):
@@ -53,13 +55,15 @@ class LyricCompressor:
         song_lyrics = self.get_song_lyrics(title, artist)
         all_song_lyrics.append((title, artist, song_lyrics))
 
-    def get_song_lyrics(self, title: str, artist: str):
-        song_url = self._get_song_url(title, artist)
-        lyrics = self._scrape_lyrics(song_url)
+    @staticmethod
+    def get_song_lyrics(title: str, artist: str):
+        song_url = LyricCompressor._get_song_url(title, artist)
+        lyrics = LyricCompressor._scrape_lyrics(song_url)
         return lyrics
 
-    def _get_song_url(self, title: str, artist: str):
-        headers = {'Authorization': 'Bearer ' + self.client_access_token}
+    @staticmethod
+    def _get_song_url(title: str, artist: str):
+        headers = {'Authorization': 'Bearer ' + LyricCompressor.client_access_token}
         params = {'q': '{} {}'.format(title, artist)}
 
         response = requests.get('https://api.genius.com/search', headers=headers, params=params)
@@ -79,13 +83,15 @@ class LyricCompressor:
         song_url = results[0]['result']['url']
         return song_url
 
-    def _scrape_lyrics(self, song_url: str):
+    @staticmethod
+    def _scrape_lyrics(song_url: str):
         page = requests.get(song_url)
         html = BeautifulSoup(page.text, 'html.parser')
         lyrics = html.find('div', class_='lyrics').get_text()
         return lyrics
 
-    def compress_lyrics(self, lyrics: str):
+    @staticmethod
+    def compress_lyrics(lyrics: str) -> float:
         # Preprocessing
         lyrics = lyrics.strip()
         lyrics = lyrics.replace('\n\n', '\n')
@@ -102,7 +108,8 @@ class LyricCompressor:
         # print(len(compressed_lyrics))
         return 1 - len(compressed_lyrics) / len(lyrics)
 
-    def _compress(self, uncompressed: str):
+    @staticmethod
+    def _compress(uncompressed: str) -> List[int]:
         """Compress a string to a list of output symbols."""
 
         # Build the dictionary.
@@ -136,9 +143,8 @@ def main():
     args = parser.parse_args()
 
     if args.song and args.artist:
-        lyric_getter = LyricCompressor()
-        lyrics = lyric_getter.get_song_lyrics(args.song, args.artist)
-        reduction = lyric_getter.compress_lyrics(lyrics)
+        lyrics = LyricCompressor.get_song_lyrics(args.song, args.artist)
+        reduction = LyricCompressor.compress_lyrics(lyrics)
         print('size_reduction={}'.format(reduction))
     elif args.cache:
         lyric_getter = LyricCompressor(args.cache)
