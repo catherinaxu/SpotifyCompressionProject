@@ -34,7 +34,7 @@ class PlaylistRetriever:
                     while tracks['next']:
                         tracks = sp.next(tracks)
                         PlaylistRetriever._add_tracks(tracks['items'], track_list)
-                    tracks_by_playlist.append(track_list)
+                    tracks_by_playlist.append((playlist['name'], track_list))
         else:
             print("Can't get token for", user_id)
             return None
