@@ -13,7 +13,7 @@ class PlaylistRetriever:
 
     @staticmethod
     def get_playlists(user_id: str):
-        scope = 'playlist-read-private'
+        scope = 'playlist-read-collaborative playlist-read-private'
         client_id = 'c4566167b7814ab1b22916d17a77063e'
         client_secret = '9e100161059247f7877c66636fae3f74'
         redirect_uri = 'http://localhost/'
@@ -42,4 +42,4 @@ class PlaylistRetriever:
         return tracks_by_playlist
 
 if __name__ == '__main__':
-    print(PlaylistRetriever.get_playlists('129599297'))
+    PlaylistRetriever.get_playlists('129599297')
